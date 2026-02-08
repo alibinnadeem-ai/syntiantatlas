@@ -1,72 +1,98 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../components/Layout';
-import { useAuthStore } from '../store';
-import { propertyApi } from '../utils/api';
+
+import { useState, useEffect } from 'react';
+import DashboardLayout from '../components/DashboardLayout';
+import StatsCard from '../components/StatsCard';
+import { FaWallet, FaBuilding, FaThLarge } from 'react-icons/fa';
+import { BiBuildingHouse } from 'react-icons/bi';
+import Link from 'next/link';
 
 export default function Dashboard() {
-  const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const [properties, setProperties] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [activeTab, setActiveTab] = useState('ownership');
 
-  if (!token) {
-    router.push('/login');
-    return null;
-  }
-
-  const loadProperties = async () => {
-    setIsLoading(true);
-    try {
-      const response = await propertyApi.getAll({ status: 'active' });
-      setProperties(response.data.properties);
-    } catch (error) {
-      console.error('Failed to load properties:', error);
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      setUser(JSON.parse(userStr));
     }
-  };
+  }, []);
 
   return (
-    <Layout user={user} onLogout={() => {
-      localStorage.removeItem('token');
-      useAuthStore.setState({ user: null, token: null });
-      router.push('/login');
-    }}>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="card bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <p className="text-sm opacity-90">Total Invested</p>
-            <p className="text-3xl font-bold">PKR 2.5M</p>
-          </div>
-          <div className="card bg-gradient-to-br from-green-500 to-green-600 text-white">
-            <p className="text-sm opacity-90">Current Value</p>
-            <p className="text-3xl font-bold">PKR 2.9M</p>
-          </div>
-          <div className="card bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <p className="text-sm opacity-90">Total Returns</p>
-            <p className="text-3xl font-bold">PKR 375K</p>
-          </div>
-          <div className="card bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-            <p className="text-sm opacity-90">Properties</p>
-            <p className="text-3xl font-bold">12</p>
-          </div>
-        </div>
-
-        <div className="card">
-          <h2 className="text-xl font-bold mb-4">Featured Properties</h2>
-          {isLoading ? (
-            <p className="text-gray-600">Loading properties...</p>
-          ) : (
-            <button onClick={loadProperties} className="btn-primary">
-              Load Properties
-            </button>
-          )}
-        </div>
+    <DashboardLayout>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-800">Portfolio</h2>
+        <Link href="/projects">
+          <button className="bg-daoblue text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-800 transition shadow-lg shadow-blue-500/30">
+            Explore Investments
+          </button>
+        </Link>
       </div>
-    </Layout>
+
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <StatsCard
+          title="Amount Invested"
+          value="0 PKR"
+          icon={FaWallet}
+        />
+        <StatsCard
+          title="Area Owned"
+          value="0 sq. ft."
+          icon={FaThLarge}
+          subValues={[
+            { label: 'Area Owned', value: '0 sq. ft.', icon: FaThLarge },
+            { label: 'Residential', value: '0 sq. ft.', icon: BiBuildingHouse },
+            { label: 'Commercial', value: '0 sq. ft.', icon: FaBuilding }
+          ]}
+        />
+      </div>
+
+      {/* Info Banner */}
+      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-8 flex items-start gap-4">
+        <div className="text-2xl">💸</div>
+        <p className="text-sm text-gray-700">
+          This is where you'll see a summary of your investment portfolio. To invest in our highly qualified projects,
+          <Link href="/projects">
+            <span className="text-daoblue font-semibold cursor-pointer hover:underline ml-1">click here.</span>
+          </Link>
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => setActiveTab('ownership')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all
+            ${activeTab === 'ownership'
+              ? 'bg-white text-daoblue border-2 border-daoblue shadow-sm'
+              : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}
+          `}
+        >
+          <FaHome /> Area Ownership
+        </button>
+        <button
+          onClick={() => setActiveTab('accumulated')}
+          className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all
+            ${activeTab === 'accumulated'
+              ? 'bg-white text-daoblue border-2 border-daoblue shadow-sm'
+              : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}
+          `}
+        >
+          <FaBuilding /> Accumulated Property
+        </button>
+      </div>
+
+      {/* Main Content Area (Empty State) */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px] text-center">
+        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+          <FaWallet className="text-4xl text-daoblue opacity-50" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Your Wallet is Empty</h3>
+        <p className="text-gray-500 max-w-md">
+          at this moment. You can share your wallet address to receive area in your account directly here.
+        </p>
+      </div>
+
+    </DashboardLayout>
   );
 }
