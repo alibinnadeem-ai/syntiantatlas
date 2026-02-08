@@ -21,21 +21,21 @@ const SidebarItem = ({ icon: Icon, label, href, active, collapsed }) => (
     </Link>
 );
 
-export default function DashboardLayout({ children }) {
+const defaultMenuItems = [
+    { icon: MdDashboard, label: 'Portfolio', href: '/dashboard' },
+    { icon: FaChartPie, label: 'Active Investments', href: '/active-investments' },
+    { icon: FaFileInvoiceDollar, label: 'Income Streams', href: '/income-streams' },
+    { icon: FaUserFriends, label: 'My Referrals', href: '/referrals' },
+    { icon: FaBuilding, label: 'Projects', href: '/projects' },
+    { icon: FaExchangeAlt, label: 'Transactions', href: '/transactions' },
+    { icon: MdOutlineInventory, label: 'DAO Listings', href: '/listings' },
+    { icon: FaCog, label: 'Settings', href: '/settings' },
+];
+
+export default function DashboardLayout({ children, menuItems = defaultMenuItems, roleTitle = 'My DAO' }) {
     const router = useRouter();
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
-
-    const menuItems = [
-        { icon: MdDashboard, label: 'Portfolio', href: '/dashboard' },
-        { icon: FaChartPie, label: 'Active Investments', href: '/active-investments' },
-        { icon: FaFileInvoiceDollar, label: 'Income Streams', href: '/income-streams' },
-        { icon: FaUserFriends, label: 'My Referrals', href: '/referrals' },
-        { icon: FaBuilding, label: 'Projects', href: '/projects' },
-        { icon: FaExchangeAlt, label: 'Transactions', href: '/transactions' },
-        { icon: MdOutlineInventory, label: 'DAO Listings', href: '/listings' },
-        { icon: FaCog, label: 'Settings', href: '/settings' },
-    ];
 
     const toggleSidebar = () => setCollapsed(!collapsed);
     const toggleMobileSidebar = () => setMobileOpen(!mobileOpen);
@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }) {
 
                 <nav className="mt-6 flex-1 overflow-y-auto">
                     <div className="px-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                        {!collapsed && 'My DAO'}
+                        {!collapsed && roleTitle}
                     </div>
                     {menuItems.map((item) => (
                         <SidebarItem

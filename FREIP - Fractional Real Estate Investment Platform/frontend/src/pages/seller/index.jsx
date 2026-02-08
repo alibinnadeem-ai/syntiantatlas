@@ -1,131 +1,83 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../components/Layout';
-import { useAuthStore } from '../store';
-import { propertyApi } from '../utils/api';
 
-export default function SellerDashboard() {
-  const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const [properties, setProperties] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+import { useState } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
+import StatsCard from '../../components/StatsCard';
+import withAuth from '../../components/withAuth';
+import { MdDashboard, MdInventory } from 'react-icons/md';
+import { FaPlusCircle, FaMoneyBillWave, FaCog, FaChartLine, FaList } from 'react-icons/fa';
 
-  useEffect(() => {
-    if (!token || user?.role !== 'seller') {
-      router.push('/login');
-      return;
-    }
-    loadProperties();
-  }, [token]);
+const sellerMenuItems = [
+  { icon: MdDashboard, label: 'Dashboard', href: '/seller' },
+  { icon: FaList, label: 'My Listings', href: '/seller/listings' },
+  { icon: FaPlusCircle, label: 'Add New Property', href: '/seller/new-property' },
+  { icon: FaMoneyBillWave, label: 'Sales & Earnings', href: '/seller/sales' },
+  { icon: FaCog, label: 'Settings', href: '/seller/settings' },
+];
 
-  const loadProperties = async () => {
-    setIsLoading(true);
-    try {
-      const response = await propertyApi.getSellerProperties();
-      setProperties(response.data.properties || []);
-    } catch (error) {
-      console.error('Failed to load properties:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (!token) return null;
-
+function SellerDashboard() {
   return (
-    <Layout user={user} onLogout={() => {
-      localStorage.removeItem('token');
-      useAuthStore.setState({ user: null, token: null });
-      router.push('/login');
-    }}>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">My Properties</h1>
-          <a href="/seller/new-property" className="btn-primary">
-            + Add New Property
-          </a>
-        </div>
-
-        {isLoading ? (
-          <p className="text-gray-600">Loading properties...</p>
-        ) : properties.length === 0 ? (
-          <div className="card text-center py-12">
-            <p className="text-gray-600 mb-4">No properties listed yet</p>
-            <a href="/seller/new-property" className="btn-primary inline-block">
-              List Your First Property
-            </a>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="card">
-                <p className="text-gray-600 text-sm">Total Properties</p>
-                <p className="text-3xl font-bold">{properties.length}</p>
-              </div>
-              <div className="card">
-                <p className="text-gray-600 text-sm">Total Raised</p>
-                <p className="text-3xl font-bold">
-                  PKR {properties.reduce((sum, p) => sum + p.funding_raised, 0).toLocaleString()}
-                </p>
-              </div>
-              <div className="card">
-                <p className="text-gray-600 text-sm">Active Properties</p>
-                <p className="text-3xl font-bold">
-                  {properties.filter(p => p.status === 'active').length}
-                </p>
-              </div>
-              <div className="card">
-                <p className="text-gray-600 text-sm">Funded Properties</p>
-                <p className="text-3xl font-bold">
-                  {properties.filter(p => p.status === 'funded').length}
-                </p>
-              </div>
-            </div>
-
-            {/* Properties Table */}
-            <div className="card overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-100 border-b">
-                  <tr>
-                    <th className="text-left p-4">Property Title</th>
-                    <th className="text-left p-4">Location</th>
-                    <th className="text-left p-4">Funding Target</th>
-                    <th className="text-left p-4">Raised</th>
-                    <th className="text-left p-4">Status</th>
-                    <th className="text-left p-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {properties.map((property) => (
-                    <tr key={property.id} className="border-b hover:bg-gray-50">
-                      <td className="p-4 font-semibold">{property.title}</td>
-                      <td className="p-4">{property.city}</td>
-                      <td className="p-4">PKR {property.funding_target?.toLocaleString()}</td>
-                      <td className="p-4">PKR {property.funding_raised?.toLocaleString()}</td>
-                      <td className="p-4">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                          property.status === 'active' ? 'bg-green-100 text-green-800' :
-                          property.status === 'funded' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {property.status}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <a href={`/seller/property/${property.id}`} className="text-blue-600 hover:underline">
-                          View
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+    <DashboardLayout menuItems={sellerMenuItems} roleTitle="Seller Panel">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-800">Seller Dashboard</h2>
+        <button className="bg-daoblue text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-800 transition shadow-lg shadow-blue-500/30 flex items-center gap-2">
+          <FaPlusCircle /> Add Property
+        </button>
       </div>
-    </Layout>
+
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatsCard
+          title="Total Listings"
+          value="12"
+          icon={MdInventory}
+        />
+        <StatsCard
+          title="Active Properties"
+          value="8"
+          icon={FaList}
+        />
+        <StatsCard
+          title="Total Earnings"
+          value="2.5M PKR"
+          icon={FaMoneyBillWave}
+        />
+        <StatsCard
+          title="Views This Month"
+          value="1.2k"
+          icon={FaChartLine}
+        />
+      </div>
+
+      {/* Recent Listings Table (Placeholder) */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 className="font-bold text-gray-800 mb-4">Recent Listings</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {[1, 2, 3].map((i) => (
+                <tr key={i}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Luxury Apartment {i}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">50,000 PKR</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">120</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </DashboardLayout>
   );
 }
+
+export default withAuth(SellerDashboard, ['seller', 'admin']);
