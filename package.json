@@ -21,22 +21,24 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "install:all": "npm install && npm run install:backend && npm run install:frontend",
+    "install:backend": "cd \"FREIP - Fractional Real Estate Investment Platform/backend\" && npm install",
+    "install:frontend": "cd \"FREIP - Fractional Real Estate Investment Platform/frontend\" && npm install",
     "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd \"FREIP - Fractional Real Estate Investment Platform/backend\" && npm run dev",
+    "dev:frontend": "cd \"FREIP - Fractional Real Estate Investment Platform/frontend\" && npm run dev",
     "build": "npm run build:backend && npm run build:frontend",
-    "build:backend": "cd backend && npm install",
-    "build:frontend": "cd frontend && npm install && npm run build",
-    "start": "npm run start:backend & npm run start:frontend",
-    "start:backend": "cd backend && npm start",
-    "start:frontend": "cd frontend && npm start",
+    "build:backend": "cd \"FREIP - Fractional Real Estate Investment Platform/backend\" && npm install",
+    "build:frontend": "cd \"FREIP - Fractional Real Estate Investment Platform/frontend\" && npm install && npm run build",
+    "start": "concurrently \"npm:start:backend\" \"npm:start:frontend\"",
+    "start:backend": "cd \"FREIP - Fractional Real Estate Investment Platform/backend\" && npm start",
+    "start:frontend": "cd \"FREIP - Fractional Real Estate Investment Platform/frontend\" && npm start",
     "test": "npm run test:backend && npm run test:frontend",
-    "test:backend": "cd backend && npm test",
-    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd \"FREIP - Fractional Real Estate Investment Platform/backend\" && npm test",
+    "test:frontend": "cd \"FREIP - Fractional Real Estate Investment Platform/frontend\" && npm test",
     "lint": "npm run lint:backend && npm run lint:frontend",
-    "lint:backend": "cd backend && npm run lint",
-    "lint:frontend": "cd frontend && npm run lint"
+    "lint:backend": "cd \"FREIP - Fractional Real Estate Investment Platform/backend\" && npm run lint",
+    "lint:frontend": "cd \"FREIP - Fractional Real Estate Investment Platform/frontend\" && npm run lint"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"

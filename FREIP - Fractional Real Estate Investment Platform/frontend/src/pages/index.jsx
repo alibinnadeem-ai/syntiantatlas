@@ -1,166 +1,236 @@
-import Head from 'next/head';
+import Head from 'next/head'
+import Link from 'next/link'
+import Layout from '../components/landing/Layout'
+import { FaCheck, FaShieldAlt, FaChartLine, FaUsers, FaPlay, FaStar, FaAward } from 'react-icons/fa'
+import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+
+// Trust Card Data
+const trustCards = [
+  {
+    icon: FaShieldAlt,
+    title: 'Verified Projects',
+    description: 'All projects are thoroughly vetted and verified for authenticity'
+  },
+  {
+    icon: FaChartLine,
+    title: 'Backed by Blockchain',
+    description: 'Secure transactions powered by blockchain technology'
+  },
+  {
+    icon: FaUsers,
+    title: 'Value-based Pricing',
+    description: 'Fair and transparent pricing based on real market value'
+  },
+  {
+    icon: FaStar,
+    title: 'Personalized Plans',
+    description: 'Investment plans tailored to your financial goals'
+  },
+]
+
+// Product Features
+const productFeatures = [
+  'Direct ownership of real estate assets',
+  'Rental income from day one',
+  'Capital appreciation over time',
+  'Complete transparency in transactions',
+]
+
+// Stats Data
+const statsData = [
+  { number: '78,206+', label: 'Platform Users' },
+  { number: '1,049,253+', label: 'Sq. ft. sold' },
+  { number: '4,936+', label: 'Transactions' },
+]
+
+// Testimonials
+const testimonials = [
+  {
+    name: 'Ahmed Khan',
+    role: 'Software Engineer',
+    text: 'Syntiant Atlas made real estate investment accessible for me. The platform is intuitive and the returns have been excellent.',
+  },
+  {
+    name: 'Sara Ali',
+    role: 'Business Owner',
+    text: 'I was skeptical at first, but the transparency and security of the platform won me over. Highly recommended!',
+  },
+  {
+    name: 'Usman Malik',
+    role: 'Financial Analyst',
+    text: 'The best real estate investment platform. Professional team and excellent customer support.',
+  },
+]
+
+// Media Logos
+const mediaLogos = [
+  'Tribune', 'Business Recorder', 'Yahoo Finance', 'Tech in Asia', 'Express Tribune'
+]
 
 export default function Home() {
   return (
-    <>
+    <Layout>
       <Head>
-        <title>Home | DAO PropTech</title>
+        <title>Syntiant Atlas - First Digital Real Estate Investment Platform</title>
+        <meta name="description" content="Start investing flexibly in real estate, wherever you are in the world. Syntiant Atlas is your gateway to secure property investment." />
       </Head>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        {/* Hero Section */}
-        <section className="py-16 text-center">
-          <h1 className="text-5xl font-bold mb-4">We're Pakistan's 1st digital real estate investment platform</h1>
-          <p className="text-2xl text-gray-300 mb-8">Award-winning, secure, data-driven, easier liquidity, no middle-man, flexible payment options, indicative future pricing, digital portfolio management</p>
-          <div className="flex gap-4 justify-center mb-8">
-            <a href="/login" className="btn-primary">Login</a>
-            <a href="/register" className="btn-secondary">Register</a>
-          </div>
-          <img src="/images/mobile-mockup.png" alt="Mobile Mockup" className="mx-auto mb-8" style={{maxWidth:'300px'}} />
-        </section>
 
-        {/* Value Propositions */}
-        <section className="container mx-auto py-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-bold mb-2">Verified Projects</h2>
-            <p>Handpicked and institutionally qualified using a 30+ factor scoring matrix</p>
-          </div>
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-bold mb-2">Backed by Blockchain</h2>
-            <p>Secure and transparent; easier to track and verify your transactions</p>
-          </div>
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-bold mb-2">Value-based Pricing</h2>
-            <p>Invest at transparently declared price; no hidden charges or hefty premiums</p>
-          </div>
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-bold mb-2">Personalized Plans</h2>
-            <p>Profit, Possession, Income or Saving – we’ve it covered</p>
-          </div>
-        </section>
+      {/* Hero Section */}
+      <section className="hero-gradient min-h-[600px] pt-28 pb-16 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 right-10 w-40 h-40 border border-white rotate-45"></div>
+          <div className="absolute top-32 right-32 w-20 h-20 border border-white rotate-45"></div>
+          <div className="absolute bottom-20 right-20 w-32 h-32 border border-white rotate-45"></div>
+        </div>
 
-        {/* How It Works */}
-        <section className="container mx-auto py-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-800 rounded-lg p-6 text-center">
-              <h3 className="text-xl font-semibold mb-2">1. Sign Up</h3>
-              <p>Explore real estate projects that meet your investment criteria</p>
+        <div className="container-custom px-4 md:px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-10">
+            {/* Content */}
+            <div className="lg:w-1/2">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                We're the 1st digital real estate investment platform
+              </h1>
+              <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+                Start investing flexibly, wherever you are in the world
+              </p>
+              <Link href="/register" className="btn-primary inline-block text-lg">
+                Begin Now
+              </Link>
             </div>
-            <div className="bg-gray-800 rounded-lg p-6 text-center">
-              <h3 className="text-xl font-semibold mb-2">2. Invest</h3>
-              <p>Build your real estate portfolio from a low initial investment and keep accumulating</p>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-6 text-center">
-              <h3 className="text-xl font-semibold mb-2">3. Check Progress</h3>
-              <p>Keep a track of your investments through your personal dashboard</p>
-            </div>
-          </div>
-        </section>
 
-        {/* Testimonials */}
-        <section className="container mx-auto py-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">Testimonials</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-gray-800 rounded-lg p-6">
-              <p className="mb-4">"I liked the location of Urban Dwellings. The past, present, and future rates are defined, so it’s a good model. What prompted me to invest in this was the level of transparency. Their online presence, portals, dashboard, and periodic update almost every two weeks are outstanding."</p>
-              <div className="flex items-center gap-4">
-                <img src="/images/testimonial1.png" alt="Naveed ur rahman" className="w-12 h-12 rounded-full" />
-                <div>
-                  <div className="font-bold">Naveed Ur Rehman</div>
-                  <div className="text-sm text-gray-400">Software Engineer</div>
+            {/* Hero Image */}
+            <div className="lg:w-1/2">
+              <div className="relative">
+                <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                  <div className="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center text-gray-400">
+                    {/* Placeholder for dashboard image if not available */}
+                    <FaChartLine size={64} />
+                  </div>
                 </div>
               </div>
             </div>
-            {/* Add more testimonials as needed */}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Platform Stats */}
-        <section className="container mx-auto py-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-3xl font-bold text-blue-400 mb-2">78,206</h3>
-            <p className="text-gray-400">Platform Users</p>
+      {/* Trust Cards Section */}
+      <section className="section-padding bg-gray-50">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {trustCards.map((card, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl p-6 card-shadow hover:-translate-y-2 transition-all duration-300"
+              >
+                <div className="w-14 h-14 bg-dao-blue/10 rounded-lg flex items-center justify-center mb-4">
+                  <card.icon className="text-dao-blue text-2xl" />
+                </div>
+                <h3 className="font-semibold text-lg text-dao-dark mb-2">{card.title}</h3>
+                <p className="text-gray-600 text-sm">{card.description}</p>
+              </div>
+            ))}
           </div>
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-3xl font-bold text-green-400 mb-2">1,049,253</h3>
-            <p className="text-gray-400">Sq. ft. sold to date</p>
-          </div>
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-3xl font-bold text-purple-400 mb-2">4,936</h3>
-            <p className="text-gray-400">Transactions</p>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Featured On */}
-        <section className="container mx-auto py-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Featured On</h2>
-          <div className="flex flex-wrap justify-center gap-8">
-            <img src="/images/featured1.png" alt="Featured Logo 1" className="h-12" />
-            <img src="/images/featured2.png" alt="Featured Logo 2" className="h-12" />
-            {/* Add more logos as needed */}
-          </div>
-        </section>
-
-        {/* Latest Blogs */}
-        <section className="container mx-auto py-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">Latest Blogs</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-800 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-2">Why Pakistan Needs PropTech to Fix Its Broken Real Estate Model</h3>
-              <p className="mb-2">Sep 15, 2025</p>
-              <a href="https://daoproptech.com/blog/why-pakistan-needs-proptech-to-fix-its-broken-real-estate-model/" target="_blank" rel="noopener" className="text-blue-400 underline">Read More</a>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-2">Real Estate Without a Middleman? Blockchain Makes It Possible</h3>
-              <p className="mb-2">Apr 24, 2025</p>
-              <a href="https://daoproptech.com/blog/real-estate-without-a-middleman-blockchain-makes-it-possible/" target="_blank" rel="noopener" className="text-blue-400 underline">Read More</a>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-2">6 Secrets to Real Estate Success: Invest with Confidence</h3>
-              <p className="mb-2">Apr 29, 2025</p>
-              <a href="https://daoproptech.com/blog/6-secrets-to-real-estate-success-invest-with-confidence-2/" target="_blank" rel="noopener" className="text-blue-400 underline">Read More</a>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="bg-gray-900 py-8 mt-16 text-gray-400">
-          <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-white font-bold mb-2">Company</h4>
-              <ul>
-                <li><a href="/about-us" className="hover:underline">About Us</a></li>
-                <li><a href="/projects" className="hover:underline">Projects</a></li>
-                <li><a href="/careers" className="hover:underline">Careers</a></li>
-                <li><a href="/blog" className="hover:underline">Blog</a></li>
+      {/* Product Showcase Section */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            {/* Content */}
+            <div className="lg:w-1/2">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-dao-dark mb-8 leading-tight">
+                The innovative way for everyone to profit from real estate investments
+              </h2>
+              <ul className="space-y-4">
+                {productFeatures.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-4">
+                    <span className="w-6 h-6 bg-dao-lime rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <FaCheck className="text-dao-dark text-sm" />
+                    </span>
+                    <span className="text-gray-700 text-lg">{feature}</span>
+                  </li>
+                ))}
               </ul>
+              <Link href="/projects" className="btn-blue inline-block mt-8">
+                Explore Projects
+              </Link>
             </div>
-            <div>
-              <h4 className="text-white font-bold mb-2">Support</h4>
-              <ul>
-                <li><a href="/contact-us" className="hover:underline">Contact Us</a></li>
-                <li><a href="/faq" className="hover:underline">FAQ</a></li>
-                <li><a href="/privacy-policy" className="hover:underline">Privacy Policy</a></li>
-                <li><a href="/terms-and-conditions" className="hover:underline">Terms and Conditions</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-2">Address</h4>
-              <p>Akron Plaza, Daftarkhawan Vantage,<br/>Plot No 13, Street No. 1, Phase 7, Bahria Town, Rawalpindi</p>
-              <p>Email: <a href="mailto:info@daoproptech.com" className="text-blue-400 underline">info@daoproptech.com</a></p>
-              <p>Phone: <a href="tel:+923143267767" className="text-blue-400 underline">+(92) 314 326 7767</a></p>
-              <div className="flex gap-4 mt-4">
-                <a href="https://www.facebook.com/DAOPropTech/" target="_blank" rel="noopener"><img src="/images/facebook.png" alt="Facebook" className="h-6" /></a>
-                <a href="https://twitter.com/daoproptech" target="_blank" rel="noopener"><img src="/images/twitter.png" alt="Twitter" className="h-6" /></a>
-                <a href="https://www.instagram.com/daoproptech/" target="_blank" rel="noopener"><img src="/images/instagram.png" alt="Instagram" className="h-6" /></a>
-                <a href="https://www.linkedin.com/company/daoproptech" target="_blank" rel="noopener"><img src="/images/linkedin.png" alt="LinkedIn" className="h-6" /></a>
-                <a href="https://www.youtube.com/c/DAOPropTech" target="_blank" rel="noopener"><img src="/images/youtube.png" alt="YouTube" className="h-6" /></a>
+
+            {/* Phone Mockup Placeholder */}
+            <div className="lg:w-1/2 flex justify-center">
+              <div className="relative w-64 h-96 bg-gray-800 rounded-3xl shadow-2xl flex items-center justify-center text-white border-4 border-gray-700">
+                <span className="text-center p-4">Mobile App Coming Soon</span>
               </div>
             </div>
           </div>
-          <div className="text-center mt-8 text-sm">© 2025 DAO PROPTECH. All rights reserved.</div>
-        </footer>
-      </div>
-    </>
-  );
+        </div>
+      </section>
+
+      {/* Impact Stats Section */}
+      <section className="py-16 hero-gradient">
+        <div className="container-custom px-4 md:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            {statsData.map((stat, index) => (
+              <div key={index} className="text-white">
+                <div className="text-4xl md:text-5xl font-bold mb-2">{stat.number}</div>
+                <div className="text-white/80 text-lg">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-dao-dark mb-4">
+              Testimonials
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Hear from our satisfied investors about their experience.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl p-6 card-shadow border border-gray-100"
+              >
+                <div className="flex items-center gap-1 text-dao-lime mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} />
+                  ))}
+                </div>
+                <p className="text-gray-600 mb-6 italic">"{testimonial.text}"</p>
+                <div>
+                  <div className="font-semibold text-dao-dark">{testimonial.name}</div>
+                  <div className="text-gray-500 text-sm">{testimonial.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 hero-gradient">
+        <div className="container-custom px-4 md:px-8 text-center">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
+            Get on the property ladder today
+          </h2>
+          <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
+            Contact us to begin your journey towards financial freedom.
+          </p>
+          <Link href="/contact-us" className="btn-primary inline-block text-lg">
+            Contact Us
+          </Link>
+        </div>
+      </section>
+    </Layout>
+  )
 }

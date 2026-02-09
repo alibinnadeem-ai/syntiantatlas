@@ -35,10 +35,10 @@ export default function Navbar() {
                 <Link href="/" className="flex items-center">
                     <div className="flex items-center gap-2">
                         <div className="w-10 h-10 bg-dao-blue rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-xl">D</span>
+                            <span className="text-white font-bold text-xl">S</span>
                         </div>
                         <span className="text-dao-blue-dark font-bold text-xl hidden sm:block">
-                            DAO PropTech
+                            Syntiant Atlas
                         </span>
                     </div>
                 </Link>
@@ -60,8 +60,11 @@ export default function Navbar() {
                 </nav>
 
                 {/* Sign Up Button */}
-                <div className="hidden lg:block">
-                    <Link href="http://localhost:3001/register" className="btn-primary">
+                <div className="hidden lg:block space-x-4">
+                    <Link href="/login" className="font-medium text-dao-blue hover:text-dao-blue-dark transition-colors">
+                        Login
+                    </Link>
+                    <Link href="/register" className="btn-primary">
                         Sign Up
                     </Link>
                 </div>
@@ -92,8 +95,11 @@ export default function Navbar() {
                                 {link.name}
                             </Link>
                         ))}
-                        <div className="px-8 py-4">
-                            <Link href="http://localhost:3001/register" className="btn-primary block text-center">
+                        <div className="px-8 py-4 flex flex-col gap-3">
+                            <Link href="/login" className="btn-blue block text-center">
+                                Login
+                            </Link>
+                            <Link href="/register" className="btn-primary block text-center">
                                 Sign Up
                             </Link>
                         </div>

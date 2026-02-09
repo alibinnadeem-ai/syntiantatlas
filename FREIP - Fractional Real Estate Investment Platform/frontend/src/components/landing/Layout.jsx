@@ -4,7 +4,7 @@ import FloatingButtons from './FloatingButtons'
 
 export default function Layout({ children }) {
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col font-poppins">
             <Navbar />
             <main className="flex-grow">
                 {children}

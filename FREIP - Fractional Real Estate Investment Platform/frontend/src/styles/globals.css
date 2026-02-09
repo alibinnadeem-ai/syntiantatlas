@@ -22,22 +22,97 @@ button {
   cursor: pointer;
 }
 
-.container {
-  @apply max-w-7xl mx-auto px-4;
+@layer components {
+  /* Landing Page Styles */
+  .btn-primary {
+    @apply bg-dao-lime text-dao-blue-dark font-semibold px-8 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105;
+  }
+  
+  .btn-blue {
+    @apply bg-dao-blue text-white font-semibold px-8 py-3 rounded-full hover:bg-dao-blue-dark transition-all duration-300;
+  }
+  
+  .section-padding {
+    @apply py-16 md:py-24 px-4 md:px-8 lg:px-16;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto;
+  }
+  
+  .card-shadow {
+    @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+  }
+  
+  .hero-gradient {
+    background: linear-gradient(135deg, #0b7ef1 0%, #15459b 100%);
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-dao-blue to-dao-blue-light;
+  }
+
+  /* Existing FREIP Styles (kept for compatibility where needed, but overriden by above if conflict) */
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
 }
 
-.btn-primary {
-  @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition;
+/* Animations from Landing Page */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.btn-secondary {
-  @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
-.card {
-  @apply bg-white rounded-lg shadow-md p-6;
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
-.input-field {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+.animate-pulse-slow {
+  animation: pulse 3s infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0b7ef1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #04338C;
 }

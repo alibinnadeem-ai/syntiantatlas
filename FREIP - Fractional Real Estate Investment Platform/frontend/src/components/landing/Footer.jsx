@@ -8,8 +8,8 @@ const companyLinks = [
 ]
 
 const supportLinks = [
-    { name: 'Terms & Conditions', path: '/terms' },
-    { name: 'Privacy Policy', path: '/privacy' },
+    { name: 'Terms & Conditions', path: '/terms-and-conditions' },
+    { name: 'Privacy Policy', path: '/privacy-policy' },
     { name: 'Cookie Policy', path: '/cookies' },
 ]
 
@@ -36,9 +36,9 @@ export default function Footer() {
                     <div>
                         <div className="flex items-center gap-2 mb-6">
                             <div className="w-10 h-10 bg-dao-blue rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">D</span>
+                                <span className="text-white font-bold text-xl">S</span>
                             </div>
-                            <span className="font-bold text-xl">DAO PropTech</span>
+                            <span className="font-bold text-xl">Syntiant Atlas</span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Pakistan's 1st digital real estate investment platform. Start investing flexibly, wherever you are in the world.
@@ -110,7 +110,7 @@ export default function Footer() {
                             </li>
                             <li className="flex items-center gap-3">
                                 <FaEnvelope className="text-dao-lime" />
-                                <span>info@daoproptech.com</span>
+                                <span>info@syntiantatlas.com</span>
                             </li>
                         </ul>
                     </div>
@@ -122,7 +122,7 @@ export default function Footer() {
                 <div className="container-custom px-4 md:px-8 py-6">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <p className="text-gray-500 text-sm">
-                            © {new Date().getFullYear()} DAO PropTech. All rights reserved.
+                            © {new Date().getFullYear()} Syntiant Atlas. All rights reserved.
                         </p>
 
                         {/* Social Links */}

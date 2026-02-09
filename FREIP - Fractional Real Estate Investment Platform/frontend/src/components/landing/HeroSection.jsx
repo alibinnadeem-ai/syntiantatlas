@@ -4,7 +4,7 @@ export default function HeroSection({
     title,
     subtitle,
     buttonText,
-    buttonLink = 'http://localhost:3001/register',
+    buttonLink = '/register',
     showImage = false,
     imageSrc = null,
     centered = true
