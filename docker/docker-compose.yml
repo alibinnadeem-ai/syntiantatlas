@@ -1,0 +1,188 @@
+# =============================================================================
+# docker-compose.yml — Full Production Stack for Syntiant Atlas
+# =============================================================================
+# Usage: docker compose -f docker/docker-compose.yml up -d
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: syntiant-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-syntiant_atlas}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-syntiant_atlas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "1.0"
+        reservations:
+          memory: 256m
+          cpus: "0.25"
+    networks:
+      - syntiant-network
+
+  # ---------------------------------------------------------------------------
+  # Redis 7
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: syntiant-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-redis_secret}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.5"
+        reservations:
+          memory: 128m
+          cpus: "0.1"
+    networks:
+      - syntiant-network
+
+  # ---------------------------------------------------------------------------
+  # PgBouncer — Connection pooler
+  # ---------------------------------------------------------------------------
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: syntiant-pgbouncer
+    restart: unless-stopped
+    ports:
+      - "6432:6432"
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-syntiant_atlas}
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 1000
+      DEFAULT_POOL_SIZE: 25
+      MIN_POOL_SIZE: 5
+      RESERVE_POOL_SIZE: 5
+      AUTH_TYPE: scram-sha-256
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.25"
+    networks:
+      - syntiant-network
+
+  # ---------------------------------------------------------------------------
+  # API — NestJS Backend
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: syntiant-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@pgbouncer:6432/${POSTGRES_DB:-syntiant_atlas}
+      - DIRECT_DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-syntiant_atlas}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secret}@redis:6379
+      - API_PORT=8080
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change-me-in-production-refresh}
+    env_file:
+      - ../.env
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "1.0"
+        reservations:
+          memory: 256m
+          cpus: "0.25"
+    networks:
+      - syntiant-network
+
+  # ---------------------------------------------------------------------------
+  # Web — Next.js Frontend
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+    container_name: syntiant-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8080/api
+      - NODE_ENV=production
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.5"
+        reservations:
+          memory: 128m
+          cpus: "0.1"
+    networks:
+      - syntiant-network
+
+# ---------------------------------------------------------------------------
+# Volumes
+# ---------------------------------------------------------------------------
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+
+# ---------------------------------------------------------------------------
+# Networks
+# ---------------------------------------------------------------------------
+networks:
+  syntiant-network:
+    driver: bridge

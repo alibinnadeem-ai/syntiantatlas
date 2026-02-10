@@ -1,0 +1,166 @@
+# =============================================================================
+# PR Checks — Syntiant Atlas
+# =============================================================================
+# Runs additional quality checks specific to pull requests: size validation,
+# change summary comments, security scanning, and .env leak detection.
+# =============================================================================
+
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # -------------------------------------------------------------------------
+  # 1. PR Size Check & Change Summary
+  # -------------------------------------------------------------------------
+  size-check:
+    name: PR Size Check
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gather PR diff stats
+        id: diff
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          HEAD=${{ github.event.pull_request.head.sha }}
+
+          FILES_CHANGED=$(git diff --name-only "$BASE" "$HEAD" | wc -l | tr -d ' ')
+          LINES_ADDED=$(git diff --numstat "$BASE" "$HEAD" | awk '{ s += $1 } END { print s+0 }')
+          LINES_REMOVED=$(git diff --numstat "$BASE" "$HEAD" | awk '{ s += $2 } END { print s+0 }')
+
+          echo "files_changed=$FILES_CHANGED" >> "$GITHUB_OUTPUT"
+          echo "lines_added=$LINES_ADDED"     >> "$GITHUB_OUTPUT"
+          echo "lines_removed=$LINES_REMOVED" >> "$GITHUB_OUTPUT"
+
+          # Fail if more than 50 files changed (configurable threshold)
+          if [ "$FILES_CHANGED" -gt 50 ]; then
+            echo "large_pr=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "large_pr=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment PR summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const filesChanged  = '${{ steps.diff.outputs.files_changed }}';
+            const linesAdded    = '${{ steps.diff.outputs.lines_added }}';
+            const linesRemoved  = '${{ steps.diff.outputs.lines_removed }}';
+            const largePr       = '${{ steps.diff.outputs.large_pr }}' === 'true';
+
+            let body = `### PR Change Summary\n\n`;
+            body += `| Metric | Count |\n`;
+            body += `|--------|-------|\n`;
+            body += `| Files changed | ${filesChanged} |\n`;
+            body += `| Lines added | +${linesAdded} |\n`;
+            body += `| Lines removed | -${linesRemoved} |\n\n`;
+
+            if (largePr) {
+              body += `> **Warning:** This PR modifies more than 50 files. Consider splitting it into smaller, focused PRs for easier review.\n`;
+            }
+
+            // Upsert: update existing bot comment or create a new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const marker = '### PR Change Summary';
+            const existing = comments.find(c => c.body && c.body.startsWith(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if PR is too large
+        if: steps.diff.outputs.large_pr == 'true'
+        run: |
+          echo "::warning::This PR changes ${{ steps.diff.outputs.files_changed }} files. Consider breaking it up."
+          # Intentionally warn but do not fail the workflow — remove 'exit 0' and
+          # uncomment the next line to enforce a hard gate:
+          # exit 1
+          exit 0
+
+  # -------------------------------------------------------------------------
+  # 2. Security Scan
+  # -------------------------------------------------------------------------
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high || true
+        # "|| true" prevents hard failure — review audit output manually.
+        # Remove "|| true" to enforce a hard gate on high/critical vulns.
+
+      - name: Check for .env files in PR diff
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          HEAD=${{ github.event.pull_request.head.sha }}
+
+          ENV_FILES=$(git diff --name-only "$BASE" "$HEAD" | grep -E '\.env($|\.)' || true)
+
+          if [ -n "$ENV_FILES" ]; then
+            echo "::error::Potential secret leak detected! The following .env files were modified or added in this PR:"
+            echo "$ENV_FILES"
+            echo ""
+            echo "If these files are intentional (e.g. .env.example), verify they contain no real secrets."
+            exit 1
+          else
+            echo "No .env files found in the diff. All clear."
+          fi
+
+      - name: Check for common secret patterns
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          HEAD=${{ github.event.pull_request.head.sha }}
+
+          # Search the diff for common secret patterns (case-insensitive)
+          SECRETS_FOUND=$(git diff "$BASE" "$HEAD" | grep -iE '(PRIVATE_KEY|SECRET_KEY|API_KEY|PASSWORD)\s*=\s*["\x27]?.{8,}' | grep -v '^\-' | head -20 || true)
+
+          if [ -n "$SECRETS_FOUND" ]; then
+            echo "::warning::Possible hardcoded secrets detected in the diff. Please review the following matches:"
+            echo "$SECRETS_FOUND"
+            echo ""
+            echo "If these are test/placeholder values, you can ignore this warning."
+          else
+            echo "No obvious secret patterns found in the diff."
+          fi

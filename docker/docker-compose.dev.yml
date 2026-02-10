@@ -1,0 +1,69 @@
+# =============================================================================
+# docker-compose.dev.yml — Development Infrastructure for Syntiant Atlas
+# =============================================================================
+# Usage: docker compose -f docker/docker-compose.dev.yml up -d
+# Provides: PostgreSQL, Redis, PgBouncer for local development
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: syntiant-dev-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: syntiant_atlas
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d syntiant_atlas"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Redis 7
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: syntiant-dev-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # PgBouncer — Connection pooler
+  # ---------------------------------------------------------------------------
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: syntiant-dev-pgbouncer
+    ports:
+      - "6432:6432"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/syntiant_atlas
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 100
+      DEFAULT_POOL_SIZE: 10
+      AUTH_TYPE: scram-sha-256
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata:

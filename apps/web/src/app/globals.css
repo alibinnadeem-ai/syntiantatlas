@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  body {
+    @apply font-poppins text-gray-900 bg-white antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-dao-lime text-dao-blue-dark font-semibold px-6 py-3 rounded-lg
+           hover:bg-dao-lime/90 transition-colors duration-200;
+  }
+
+  .btn-blue {
+    @apply bg-dao-blue text-white font-semibold px-6 py-3 rounded-lg
+           hover:bg-dao-blue-dark transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 font-semibold px-6 py-3 rounded-lg
+           hover:bg-gray-300 transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+  }
+}

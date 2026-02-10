@@ -1,0 +1,86 @@
+# =============================================================================
+# Dockerfile.web — Production-optimized Next.js Frontend
+# =============================================================================
+# Build context: repository root (../)
+# Usage: docker build -f docker/Dockerfile.web .
+# Requires: output: "standalone" in next.config.js
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Base image
+# ---------------------------------------------------------------------------
+FROM node:18-alpine AS base
+WORKDIR /app
+
+# ---------------------------------------------------------------------------
+# Stage 1: Install dependencies
+# ---------------------------------------------------------------------------
+FROM base AS deps
+
+# Copy workspace root manifests
+COPY package.json package-lock.json ./
+
+# Copy workspace package manifests
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
+
+# Install production + dev dependencies (dev needed for build tooling)
+RUN npm ci --workspace=@syntiant/web --workspace=@syntiant/shared --include-workspace-root
+
+# ---------------------------------------------------------------------------
+# Stage 2: Build
+# ---------------------------------------------------------------------------
+FROM base AS builder
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy installed node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
+
+# Copy source code
+COPY packages/shared ./packages/shared
+COPY apps/web ./apps/web
+COPY tsconfig.base.json ./
+
+# Build shared package first
+RUN cd packages/shared && npx tsc
+
+# Build Next.js (requires standalone output mode in next.config)
+RUN cd apps/web && npm run build
+
+# ---------------------------------------------------------------------------
+# Stage 3: Production runner
+# ---------------------------------------------------------------------------
+FROM base AS runner
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nextjs
+
+# Copy public assets (before chown for layer caching)
+COPY --from=builder /app/apps/web/public ./apps/web/public
+
+# Copy standalone output (includes server.js + minimal node_modules)
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+
+# Copy static assets
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+
+# Switch to non-root user
+USER nextjs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "apps/web/server.js"]

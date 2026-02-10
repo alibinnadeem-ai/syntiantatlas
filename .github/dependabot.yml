@@ -1,0 +1,102 @@
+# =============================================================================
+# Dependabot Configuration — Syntiant Atlas
+# =============================================================================
+# Keeps npm dependencies and GitHub Actions up to date with weekly PRs.
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+# =============================================================================
+
+version: 2
+
+updates:
+  # ---------------------------------------------------------------------------
+  # Root workspace (npm)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # ---------------------------------------------------------------------------
+  # apps/api (npm)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+      - "api"
+    commit-message:
+      prefix: "deps(api)"
+      include: "scope"
+
+  # ---------------------------------------------------------------------------
+  # apps/web (npm)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+      - "web"
+    commit-message:
+      prefix: "deps(web)"
+      include: "scope"
+
+  # ---------------------------------------------------------------------------
+  # packages/contracts (npm)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/packages/contracts"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+      - "contracts"
+    commit-message:
+      prefix: "deps(contracts)"
+      include: "scope"
+
+  # ---------------------------------------------------------------------------
+  # GitHub Actions
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
