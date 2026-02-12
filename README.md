@@ -133,3 +133,69 @@ npm run docker:down
 **Database connection refused:** Make sure Docker is running and the containers are healthy (`docker ps`). If you just started Docker, wait a few seconds for PostgreSQL to initialize.
 
 **Cannot find module errors:** Run `npm install` from the root directory to reinstall dependencies.
+
+---
+
+## 🚀 Deployment
+
+This project is configured for deployment to:
+- **Frontend:** Vercel
+- **Backend:** Railway
+- **Database:** Railway (PostgreSQL)
+- **Cache:** Railway (Redis)
+
+### Deployment Guides
+
+We've created comprehensive deployment documentation:
+
+1. **[DEPLOYMENT_START_HERE.md](./DEPLOYMENT_START_HERE.md)** - Start here! Overview and quick start
+2. **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete step-by-step guide
+3. **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Interactive checklist (45-60 min)
+4. **[DEPLOYMENT_QUICK_REFERENCE.md](./DEPLOYMENT_QUICK_REFERENCE.md)** - Commands and quick fixes
+
+### Quick Deployment Steps
+
+1. Push your code to GitHub
+2. Create Railway project and add PostgreSQL + Redis
+3. Configure backend service in Railway
+4. Deploy frontend to Vercel
+5. Connect services and update CORS
+
+**Estimated Time:** 45-60 minutes for first deployment
+
+Both Railway and Vercel will auto-deploy on every push to `main` after initial setup.
+
+---
+
+## 📖 Additional Documentation
+
+- [Feature Gap Analysis](./FEATURE_GAP_ANALYSIS.md)
+- [Implementation Plan](./IMPLEMENTATION_PLAN.md)
+- Database seed data and migrations in `/prisma`
+- API documentation available at `http://localhost:8080/api/docs` (Swagger)
+
+---
+
+## 🔐 Security
+
+- Never commit `.env` files (already in `.gitignore`)
+- Generate strong JWT secrets in production using `openssl rand -base64 32`
+- Change default admin password after first login
+- Enable 2FA for production environments
+- Review and rotate API keys regularly
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feature/my-feature`
+2. Make your changes and test locally
+3. Commit with clear messages: `git commit -m "feat: add my feature"`
+4. Push and create a Pull Request
+5. Vercel will create a preview deployment for your PR
+
+---
+
+## 📄 License
+
+Proprietary - Syntiant Atlas
