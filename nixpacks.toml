@@ -1,0 +1,18 @@
+[phases.setup]
+nixPkgs = ["nodejs-20_x"]
+
+[phases.install]
+cmds = ["npm install --legacy-peer-deps"]
+
+[phases.build]
+cmds = [
+  "npx prisma generate",
+  "cd packages/shared && npm run build || true",
+  "cd apps/api && npm run build"
+]
+
+[start]
+cmd = "cd apps/api && npm run start:prod"
+
+[variables]
+NODE_ENV = "production"
