@@ -244,8 +244,8 @@ In Railway:
 Once deployed, test your API:
 
 ```bash
-# Get your Railway API URL (e.g., https://your-app.railway.app)
-curl https://your-app.railway.app/api/health
+# Get your Railway API URL (e.g., https://syntiantapi-production.up.railway.app)
+curl https://syntiantapi-production.up.railway.app/api/health
 
 # Expected response:
 # {"status":"ok","timestamp":"...","uptime":123,"database":"connected","redis":"connected"}
@@ -289,7 +289,7 @@ Your `vercel.json` should route API calls to Railway:
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://your-app.railway.app/api/:path*"
+      "destination": "https://syntiantapi-production.up.railway.app/api/:path*"
     }
   ],
   "headers": [
@@ -305,7 +305,7 @@ Your `vercel.json` should route API calls to Railway:
 }
 ```
 
-**Important:** Replace `https://your-app.railway.app` with your actual Railway API URL.
+**Important:** Replace `https://syntiantapi-production.up.railway.app` with your actual Railway API URL.
 
 ### Step 3: Deploy to Vercel
 
@@ -361,8 +361,8 @@ In Vercel dashboard, go to **Settings** → **Environment Variables** and add:
 
 ```bash
 # API URLs (use your Railway API URL)
-NEXT_PUBLIC_API_URL=https://your-app.railway.app
-NEXT_PUBLIC_WS_URL=wss://your-app.railway.app
+NEXT_PUBLIC_API_URL=https://syntiantapi-production.up.railway.app
+NEXT_PUBLIC_WS_URL=wss://syntiantapi-production.up.railway.app
 
 # Optional: Analytics
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
@@ -397,13 +397,13 @@ Redeploy the API after changing CORS settings.
 
 ```bash
 # Check API health
-curl https://your-app.railway.app/api/health
+curl https://syntiantapi-production.up.railway.app/api/health
 
 # Check Redis
-curl https://your-app.railway.app/api/health | grep redis
+curl https://syntiantapi-production.up.railway.app/api/health | grep redis
 
 # Check database
-curl https://your-app.railway.app/api/health | grep database
+curl https://syntiantapi-production.up.railway.app/api/health | grep database
 
 # Check frontend
 curl -I https://your-app.vercel.app
@@ -413,7 +413,7 @@ curl -I https://your-app.vercel.app
 
 ```javascript
 // In browser console on your frontend
-const ws = new WebSocket('wss://your-app.railway.app');
+const ws = new WebSocket('wss://syntiantapi-production.up.railway.app');
 ws.onopen = () => console.log('WebSocket connected!');
 ws.onerror = (err) => console.error('WebSocket error:', err);
 ```
@@ -522,7 +522,7 @@ railway variables
 #### "API calls failing"
 1. Verify `vercel.json` rewrites point to correct Railway URL
 2. Check CORS settings in Railway API
-3. Test API directly: `curl https://your-app.railway.app/api/health`
+3. Test API directly: `curl https://syntiantapi-production.up.railway.app/api/health`
 
 #### "Environment variables not available"
 1. Ensure variables are prefixed with `NEXT_PUBLIC_` for client-side access

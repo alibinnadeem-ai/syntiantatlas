@@ -7,8 +7,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://your-api.railway.app/api/:path*",
-      "comment": "TODO: Update with your actual Railway API URL after deployment"
+      "destination": "https://syntiantapi-production.up.railway.app/api/:path*"
     }
   ],
   "headers": [
