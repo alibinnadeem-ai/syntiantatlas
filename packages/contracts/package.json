@@ -14,7 +14,7 @@
   "author": "SYNTIANT Technologies",
   "license": "MIT",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
     "hardhat": "^2.28.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
